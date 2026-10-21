@@ -43,3 +43,9 @@ logging:
   structured:
     format:
       console: logstash
+
+vistay:
+  security:
+    jwt-secret: ${VISTAY_JWT_SECRET:local-development-secret-change-before-production-32}
+  cors:
+    allowed-origins: ${VISTAY_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174,http://localhost:5175}
