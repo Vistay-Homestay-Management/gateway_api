@@ -1,0 +1,45 @@
+spring:
+  application:
+    name: vistay-api-gateway
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: graphql-federation
+              uri: ${APOLLO_ROUTER_URL:http://localhost:4000}
+              predicates:
+                - Path=/graphql
+            - id: authentication
+              uri: ${AUTH_SERVICE_URL:http://localhost:8101}
+              predicates:
+                - Path=/api/v1/auth/**,/.well-known/jwks.json
+            - id: notification-sse
+              uri: ${NOTIFICATION_SERVICE_URL:http://localhost:8108}
+              predicates:
+                - Path=/api/v1/notifications/stream
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+logging:
+  structured:
+    format:
+      console: logstash
